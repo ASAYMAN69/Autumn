@@ -1,0 +1,920 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Automation Services | Save Time & Grow Your Business</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3a86ff;
+      --primary-dark: #2667cc;
+      --secondary-color: #8338ec;
+      --text-color: #333;
+      --text-light: #666;
+      --bg-color: #fff;
+      --bg-alt: #f8f9fa;
+      --success-color: #3bac78;
+      --error-color: #e63946;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      position: relative;
+      padding-bottom: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 4px;
+      width: 60px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 2px;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    section {
+      padding: 5rem 0;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: var(--border-radius);
+      border: none;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      padding: 0.7rem 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 60%;
+      height: 140%;
+      background: linear-gradient(120deg, rgba(58, 134, 255, 0.1) 0%, rgba(131, 56, 236, 0.1) 100%);
+      border-radius: 50%;
+      transform: rotate(-15deg);
+      z-index: 0;
+      animation: pulse 8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: rotate(-15deg) scale(1);
+      }
+      100% {
+        transform: rotate(-10deg) scale(1.05);
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+    }
+
+    .hero h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+    }
+
+    /* Services Section */
+    .services {
+      background-color: var(--bg-color);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      background-color: var(--bg-alt);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .service-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      z-index: -1;
+    }
+
+    .service-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .service-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      background-color: var(--bg-alt);
+    }
+
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      z-index: 0;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .step:nth-child(2) .step-number {
+      background-color: #5d5fef;
+    }
+
+    .step:nth-child(3) .step-number {
+      background-color: var(--secondary-color);
+    }
+
+    /* Why Work With Me */
+    .why-work {
+      background-color: var(--bg-color);
+    }
+
+    .why-work-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .benefit-card {
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--primary-color);
+      background-color: var(--bg-alt);
+      transition: var(--transition);
+    }
+
+    .benefit-card:hover {
+      box-shadow: var(--box-shadow);
+      transform: translateX(5px);
+    }
+
+    .benefit-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .testimonial {
+      margin-top: 3rem;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      background: linear-gradient(120deg, rgba(58, 134, 255, 0.05) 0%, rgba(131, 56, 236, 0.05) 100%);
+      position: relative;
+    }
+
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: 0;
+      left: 20px;
+      font-size: 5rem;
+      color: rgba(131, 56, 236, 0.2);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .testimonial-text {
+      font-style: italic;
+      font-size: 1.1rem;
+      position: relative;
+      z-index: 1;
+      padding-left: 1rem;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      margin-top: 1rem;
+      text-align: right;
+    }
+
+    /* Contact Form */
+    .contact {
+      background-color: var(--bg-alt);
+    }
+
+    .form-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: var(--bg-color);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+    }
+
+    .form-message {
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      display: none;
+    }
+
+    .form-message.success {
+      background-color: rgba(59, 172, 120, 0.1);
+      color: var(--success-color);
+      border: 1px solid rgba(59, 172, 120, 0.2);
+    }
+
+    .form-message.error {
+      background-color: rgba(230, 57, 70, 0.1);
+      color: var(--error-color);
+      border: 1px solid rgba(230, 57, 70, 0.2);
+    }
+
+    .required::after {
+      content: '*';
+      color: var(--error-color);
+      margin-left: 0.25rem;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #2b2d42;
+      color: #fff;
+      padding: 3rem 0;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-left, .footer-right {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    .social-link {
+      color: #fff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .social-link:hover {
+      color: var(--primary-color);
+    }
+
+    .social-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Success Modal */
+    .thank-you-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .thank-you-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--bg-color);
+      padding: 3rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.4s ease;
+    }
+
+    .thank-you-modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        right: -100%;
+        width: 70%;
+        height: calc(100vh - 70px);
+        background-color: var(--bg-color);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+        transition: 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-links.active {
+        right: 0;
+      }
+
+      .menu-btn {
+        display: block;
+      }
+
+      .timeline {
+        flex-direction: column;
+        gap: 3rem;
+      }
+
+      .timeline::before {
+        width: 2px;
+        height: 100%;
+        left: calc(25px - 1px);
+        top: 0;
+      }
+
+      .step {
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+
+      .step-number {
+        margin: 0;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-right {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="header">
+    <div class="container">
+      <nav>
+        <div class="logo">AutomationPro</div>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#how-it-works">Process</a></li>
+          <li><a href="#why-work">Why Me</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="menu-btn" id="menuBtn">☰</button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Automate the Boring. Focus on Growth.</h1>
+        <p>Save time, reduce manual work, and improve efficiency with smart automations tailored to your business needs.</p>
+        <a href="#contact" class="btn">Book a Free Discovery Call</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="services" id="services">
+    <div class="container">
+      <h2>Custom Automation Services</h2>
+      <p>I create practical automation solutions that save time and reduce errors in your business operations.</p>
+      
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🤖</div>
+          <h3 class="service-title">Website Chatbot Setup</h3>
+          <p>Intelligent chatbots with advanced logic for customer support, lead generation, and process automation.</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">💬</div>
+          <h3 class="service-title">Messaging Workflows</h3>
+          <p>Automated communication systems across Telegram, WhatsApp, SMS, and Email to keep conversations flowing.</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">🔄</div>
+          <h3 class="service-title">App Integrations</h3>
+          <p>Seamless connections between Notion, Airtable, Google Sheets, and your favorite tools for data synchronization.</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">🔔</div>
+          <h3 class="service-title">Real-time Notifications</h3>
+          <p>Custom alert systems that notify the right people at the right time when important events occur.</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">📊</div>
+          <h3 class="service-title">Control Dashboards</h3>
+          <p>Visual dashboards to monitor, control, and analyze your automated processes in real-time.</p>
+        </div>
+        
+        <div class="service-card">
+          <div class="service-icon">📁</div>
+          <h3 class="service-title">Automated Reporting</h3>
+          <p>Scheduled data processing and reporting systems that compile information without manual effort.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <h2>How It Works</h2>
+      <p>A simple, transparent process to bring automation to your business:</p>
+      
+      <div class="timeline">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div>
+            <h3>Discovery Call</h3>
+            <p>We discuss your needs, pain points, and automation goals to identify the best opportunities.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <div>
+            <h3>Build & Test</h3>
+            <p>I develop your custom solution with regular updates and refinements based on your feedback.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <div>
+            <h3>Deploy & Support</h3>
+            <p>Once you're satisfied, we launch your automation and I provide ongoing support to ensure success.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-work" id="why-work">
+    <div class="container">
+      <h2>Why Work With Me</h2>
+      <p>I bring a personalized approach to automation that focuses on practical business results.</p>
+      
+      <div class="why-work-content">
+        <div class="benefit-card">
+          <h3>Personal Service</h3>
+          <p>I'm a solo automation expert who works directly with you—no outsourcing, no middlemen, just direct collaboration.</p>
+        </div>
+        
+        <div class="benefit-card">
+          <h3>Fast Turnaround</h3>
+          <p>Get your automation solutions up and running quickly with iterative delivery that shows progress from day one.</p>
+        </div>
+        
+        <div class="benefit-card">
+          <h3>Business-Focused</h3>
+          <p>I create practical solutions that address real business needs instead of tech for tech's sake.</p>
+        </div>
+      </div>
+      
+      <div class="testimonial">
+        <p class="testimonial-text">The custom automation system saved my team over 15 hours every week on repetitive tasks. The investment paid for itself within the first month, and the ongoing support has been exceptional.</p>
+        <p class="testimonial-author">— Sarah Johnson, Marketing Director</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="container">
+      <h2>Start Your Automation Journey</h2>
+      <p>Book a free discovery call to discuss how we can automate your workflows.</p>
+      
+      <div class="form-wrapper">
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="formalName" class="required">Name</label>
+            <input type="text" id="formalName" name="formalName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="companyName" class="required">Company Name</label>
+            <input type="text" id="companyName" name="companyName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="emailAddress" class="required">Email Address</label>
+            <input type="email" id="emailAddress" name="emailAddress" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="whatsappNumber">WhatsApp Number (optional)</label>
+            <input type="text" id="whatsappNumber" name="whatsappNumber">
+          </div>
+          
+          <div class="form-group">
+            <label for="companyDomain">Company Website (optional)</label>
+            <input type="text" id="companyDomain" name="companyDomain">
+          </div>
+          
+          <button type="submit" class="btn" style="width: 100%;">Book My Free Discovery Call</button>
+        </form>
+        
+        <div id="formMessage" class="form-message"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="thank-you-modal" id="thankYouModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">×</button>
+      <h3>Thank You!</h3>
+      <p>Your message has been sent successfully. I'll get back to you within 24 hours to schedule your free discovery call.</p>
+      <p>In the meantime, feel free to connect with me on LinkedIn.</p>
+      <a href="https://www.linkedin.com/in/asayman/" target="_blank" class="btn" style="margin-top: 1rem;">Connect on LinkedIn</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; <span id="currentYear"></span> AutomationPro. All rights reserved.</p>
+        </div>
+        <div class="footer-right">
+          <a href="https://www.linkedin.com/in/asayman/" target="_blank" class="social-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+            Connect on LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update current year in footer
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      // Mobile menu toggle
+      const menuBtn = document.getElementById('menuBtn');
+      const navLinks = document.getElementById('navLinks');
+      
+      menuBtn.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+        menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+      });
+
+      // Close mobile menu when clicking a link
+      const navItems = document.querySelectorAll('.nav-links a');
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          navLinks.classList.remove('active');
+          menuBtn.textContent = '☰';
+        });
+      });
+
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+
+      // Header scroll effect
+      const header = document.getElementById('header');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+
+      // Form submission
+      const contactForm = document.getElementById('contactForm');
+      const formMessage = document.getElementById('formMessage');
+      const thankYouModal = document.getElementById('thankYouModal');
+      const modalClose = document.getElementById('modalClose');
+
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate form
+        const formalName = document.getElementById('formalName').value;
+        const companyName = document.getElementById('companyName').value;
+        const emailAddress = document.getElementById('emailAddress').value;
+        
+        if (!formalName || !companyName || !emailAddress) {
+          formMessage.textContent = 'Please fill out all required fields.';
+          formMessage.className = 'form-message error';
+          formMessage.style.display = 'block';
+          return;
+        }
+        
+        // Prepare data for submission
+        const formData = {
+          formalName: formalName,
+          companyName: companyName,
+          emailAddress: emailAddress,
+          whatsappNumber: document.getElementById('whatsappNumber').value || "",
+          companyDomain: document.getElementById('companyDomain').value || ""
+        };
+        
+        // Submit form data
+        fetch('https://lovely-proper-sunfish.ngrok-free.app/webhook/collectBloggerLeads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Show success message
+          contactForm.reset();
+          thankYouModal.classList.add('show');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          formMessage.textContent = 'There was an error submitting your form. Please try again.';
+          formMessage.className = 'form-message error';
+          formMessage.style.display = 'block';
+        });
+      });
+
+      // Close modal
+      modalClose.addEventListener('click', function() {
+        thankYouModal.classList.remove('show');
+      });
+
+      // Close modal when clicking outside
+      window.addEventListener('click', function(e) {
+        if (e.target === thankYouModal) {
+          thankYouModal.classList.remove('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
