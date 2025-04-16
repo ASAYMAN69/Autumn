@@ -85,7 +85,7 @@
     
     // Chat API handling
     const chatApi = {
-      webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/b5a531d1-585f-43fe-ba30-ec5aacac4189/chat',
+      webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/2d776ef0-a72f-4639-9a3f-914160c90c41/chat',
       
       sendMessage: async (message) => {
         try {
