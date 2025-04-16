@@ -507,6 +507,41 @@
       color: var(--purple-medium);
     }
 
+    .step-content {
+      flex: 1;
+    }
+
+    /* Responsive How It Works section */
+    @media (max-width: 992px) {
+      .timeline {
+        flex-direction: column;
+        max-width: 500px;
+        margin: 3rem auto 0;
+      }
+      
+      .timeline::before {
+        width: 2px;
+        height: 100%;
+        left: 30px;
+        top: 0;
+      }
+      
+      .step {
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding-left: 0;
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .step-number {
+        margin: 0;
+        flex-shrink: 0;
+      }
+    }
+
     /* Why Work With Me */
     .why-work {
       background-color: var(--bg-color);
@@ -816,33 +851,6 @@
     }
 
     /* Responsive */
-    @media (max-width: 992px) {
-      .timeline {
-        flex-direction: column;
-      }
-      
-      .timeline::before {
-        width: 2px;
-        height: calc(100% - 80px);
-        left: 30px;
-        top: 80px;
-      }
-      
-      .step {
-        text-align: left;
-        display: flex;
-        align-items: flex-start;
-        gap: 1.5rem;
-        padding-left: 0;
-        margin-left: 30px;
-        padding-top: 20px;
-      }
-      
-      .step-number {
-        margin: 0;
-      }
-    }
-
     @media (max-width: 768px) {
       .nav-links {
         position: fixed;
@@ -970,7 +978,7 @@
       <div class="timeline">
         <div class="step">
           <div class="step-number">1</div>
-          <div>
+          <div class="step-content">
             <h3>Discovery Call</h3>
             <p>We discuss your needs, pain points, and automation goals to identify the best opportunities.</p>
           </div>
@@ -978,7 +986,7 @@
         
         <div class="step">
           <div class="step-number">2</div>
-          <div>
+          <div class="step-content">
             <h3>Build & Test</h3>
             <p>I develop your custom solution with regular updates and refinements based on your feedback.</p>
           </div>
@@ -986,7 +994,7 @@
         
         <div class="step">
           <div class="step-number">3</div>
-          <div>
+          <div class="step-content">
             <h3>Deploy & Support</h3>
             <p>Once you're satisfied, we launch your automation and I provide ongoing support to ensure success.</p>
           </div>
@@ -1093,6 +1101,8 @@
       </div>
     </div>
   </footer>
+
+  <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
