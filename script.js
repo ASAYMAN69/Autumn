@@ -1,29 +1,44 @@
-
 // Chat Widget Script
 (function() {
+    // Function to generate timestamp-based keyphrase
+    const generateTimeBasedKeyphrase = () => {
+      const now = new Date();
+      const utcNow = new Date(now.toUTCString());
+      
+      const year = utcNow.getFullYear();
+      const month = String(utcNow.getMonth() + 1).padStart(2, '0');
+      const date = String(utcNow.getDate()).padStart(2, '0');
+      const hours = String(utcNow.getHours()).padStart(2, '0');
+      const minutes = String(utcNow.getMinutes()).padStart(2, '0');
+      const seconds = String(utcNow.getSeconds()).padStart(2, '0');
+      const milliseconds = String(utcNow.getMilliseconds()).padStart(3, '0');
+      
+      return `${year}${month}${date}${hours}${minutes}${seconds}${milliseconds}`;
+    };
+    
     // Generate a unique session ID or retrieve from storage
     const generateSessionId = () => {
-      // Check if a session ID already exists in session storage
       const existingSessionId = sessionStorage.getItem('chatWidgetSessionId');
       
       if (existingSessionId) {
         return existingSessionId;
       }
       
-      // Generate a new UUID v4 session ID
+      const timeKeyphrase = generateTimeBasedKeyphrase();
+      // Use the keyphrase to enhance randomness
       const newSessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
+        const keyphraseNum = parseInt(timeKeyphrase.slice(-4)) || 0;
+        const r = (Math.random() * 16 + keyphraseNum) % 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
       
-      // Store the new session ID in session storage
       sessionStorage.setItem('chatWidgetSessionId', newSessionId);
       return newSessionId;
     };
   
     // Get session ID for this user session
-    const sessionId = generateSessionId();
+    let sessionId = generateSessionId();
     
     // UI Configuration (color scheme)
     const UIConfig = {
@@ -85,7 +100,7 @@
     
     // Chat API handling
     const chatApi = {
-      webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/2d776ef0-a72f-4639-9a3f-914160c90c41/chat',
+      webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/b5a531d1-585f-43fe-ba30-ec5aacac4189/chat',
       
       sendMessage: async (message) => {
         try {
@@ -101,7 +116,9 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            mode: 'cors', // Explicitly set CORS mode
+            credentials: 'same-origin' // Handle credentials appropriately
           });
           
           if (!response.ok) {
@@ -112,6 +129,12 @@
           return data.output || "Sorry, I couldn't understand that.";
         } catch (error) {
           console.error('Error sending message:', error);
+          
+          // More descriptive error handling for CORS issues
+          if (error.message.includes('Failed to fetch') || error instanceof TypeError) {
+            return "Sorry, there was a connection issue. This might be due to CORS restrictions. Please check your browser console for more details.";
+          }
+          
           return "Sorry, there was an error processing your request.";
         }
       }
@@ -119,7 +142,7 @@
   
     // Create the chat UI
     function createChatWidget() {
-      // Create styles for the widget with CSS variables for theming
+      // Create styles for the widget
       const style = document.createElement('style');
       style.textContent = `
         :root {
@@ -429,24 +452,144 @@
           max-height: 200px;
           border-radius: 8px;
         }
+        
+        /* Add new styles for restart confirmation dialog */
+        .restart-confirmation {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(0.9);
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 10000;
+          opacity: 0;
+          pointer-events: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          width: 280px;
+          text-align: center;
+        }
+        
+        .restart-confirmation.show {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+          pointer-events: auto;
+        }
+        
+        .restart-confirmation .warning-icon {
+          width: 48px;
+          height: 48px;
+          margin: 0 auto 16px;
+        }
+        
+        .restart-confirmation .warning-icon svg {
+          width: 100%;
+          height: 100%;
+        }
+        
+        .restart-confirmation .title {
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+        
+        .restart-confirmation .message {
+          color: #666;
+          margin-bottom: 20px;
+          font-size: 14px;
+        }
+        
+        .restart-confirmation .buttons {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+        }
+        
+        .restart-confirmation button {
+          padding: 8px 24px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .restart-confirmation .yes-btn {
+          background-color: var(--chat-button-color);
+          color: white;
+          border: none;
+        }
+        
+        .restart-confirmation .yes-btn:hover {
+          background-color: var(--button-hover-color);
+        }
+        
+        .restart-confirmation .no-btn {
+          background: transparent;
+          border: 1px solid var(--chat-button-color);
+          color: #333;
+        }
+        
+        .restart-confirmation .no-btn:hover {
+          background-color: var(--chat-button-color);
+          color: white;
+        }
+        
+        #chat-widget-restart {
+          position: absolute;
+          right: 40px;
+          top: 12px;
+          background: none;
+          border: none;
+          padding: 0;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          color: white;
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+        }
+        
+        #chat-widget-restart:hover {
+          opacity: 1;
+        }
       `;
       
       document.head.appendChild(style);
+      
+      // Create confirmation dialog
+      const confirmationDialog = document.createElement('div');
+      confirmationDialog.className = 'restart-confirmation';
+      confirmationDialog.innerHTML = `
+        <div class="warning-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="8"></line>
+          </svg>
+        </div>
+        <div class="title">Restart Conversation?</div>
+        <div class="message">This will clear your current conversation and start a new one with a fresh session. This action cannot be undone.</div>
+        <div class="buttons">
+          <button class="yes-btn">Yes, restart</button>
+          <button class="no-btn">No, keep chat</button>
+        </div>
+      `;
+      document.body.appendChild(confirmationDialog);
       
       // Create the widget container
       const container = document.createElement('div');
       container.id = 'chat-widget-container';
       
-      // Create the chat button with both message and arrow icons
+      // Create the chat button
       const button = document.createElement('div');
       button.id = 'chat-widget-button';
       button.innerHTML = '<svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><svg id="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
       
-      // Create the chat window
+      // Create the chat window with restart button
       const chatWindow = document.createElement('div');
       chatWindow.id = 'chat-widget-window';
       
-      // Create the header
       const header = document.createElement('div');
       header.id = 'chat-widget-header';
       
@@ -454,11 +597,16 @@
       title.id = 'chat-widget-title';
       title.textContent = 'Chat Support';
       
+      const restartButton = document.createElement('button');
+      restartButton.id = 'chat-widget-restart';
+      restartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9c-2.1 0-4.1-.7-5.7-2"></path><path d="M3 12a9 9 0 0 1 9-9c2.1 0 4.1.7 5.7 2"></path><path d="m3 12 2-2"></path><path d="m3 12 2 2"></path></svg>';
+      
       const closeButton = document.createElement('button');
       closeButton.id = 'chat-widget-close';
       closeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
       
       header.appendChild(title);
+      header.appendChild(restartButton);
       header.appendChild(closeButton);
       
       // Create messages container
@@ -719,6 +867,41 @@
           }, 300);
         }
       }
+      
+      // Add restart conversation functionality
+      restartButton.addEventListener('click', () => {
+        confirmationDialog.classList.add('show');
+        confirmationDialog.style.display = 'block';
+      });
+      
+      const yesButton = confirmationDialog.querySelector('.yes-btn');
+      const noButton = confirmationDialog.querySelector('.no-btn');
+      
+      yesButton.addEventListener('click', () => {
+        // Generate new session ID
+        sessionId = generateSessionId();
+        // Clear messages
+        const messagesContainer = document.getElementById('chat-widget-messages');
+        messagesContainer.innerHTML = '';
+        // Show welcome message
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          addMessage("Hello! How can I help you today?", 'bot');
+        }, 1000);
+        // Hide confirmation
+        confirmationDialog.classList.remove('show');
+        setTimeout(() => {
+          confirmationDialog.style.display = 'none';
+        }, 300);
+      });
+      
+      noButton.addEventListener('click', () => {
+        confirmationDialog.classList.remove('show');
+        setTimeout(() => {
+          confirmationDialog.style.display = 'none';
+        }, 300);
+      });
     }
   
     // Initialize the chat widget immediately to fix loading issues
