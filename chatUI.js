@@ -4,8 +4,8 @@ import { generateSessionId, chatApi } from './chatFunction.js';
   // UI Configuration (color scheme)
   const UIConfig = {
     // Default colors
-    chatButtonColor: 'rgb(74, 227, 247)', 
-    sendButtonColor: 'rgb(74, 227, 247)',
+    chatButtonColor: 'rgb(111, 90, 165)', 
+    sendButtonColor: 'rgb(154, 134, 242)',
     
     // Helper function to lighten a color - defined first to avoid the error
     lightenColor: function(color, factor) {
