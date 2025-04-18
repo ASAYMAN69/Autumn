@@ -1,3 +1,4 @@
+// Chat Widget Script
 (function() {
   // Function to generate timestamp-based keyphrase
   const generateTimeBasedKeyphrase = () => {
@@ -797,12 +798,14 @@
       if (text) {
         const textNode = document.createElement('div');
         
-        // Format text for bold and URLs
+        // Format text for bold, URLs, and line breaks
         const formattedText = text
           // First, escape any HTML to prevent XSS
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
+          // Replace "<br>" with actual line breaks
+          .replace(/<br>/g, '\n')
           // Replace URLs with clickable links
           .replace(
             /(https?:\/\/[^\s]+)|((?:[\w-]+\.)+[\w-]+(?:\/[^\s]*)?)/g,
@@ -812,7 +815,9 @@
             }
           )
           // Replace **text** with bold text
-          .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>');
+          .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>')
+          // Convert line breaks to HTML line breaks for proper rendering
+          .replace(/\n/g, '<br>');
         
         textNode.innerHTML = formattedText;
         messageElement.appendChild(textNode);
