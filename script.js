@@ -1,4 +1,3 @@
-// Chat Widget Script
 (function() {
   // Function to generate timestamp-based keyphrase
   const generateTimeBasedKeyphrase = () => {
@@ -282,6 +281,20 @@
         border-bottom-right-radius: 4px;
         margin-bottom: 3px;
         transform-origin: bottom right;
+      }
+      
+      .chat-message a {
+        color: var(--chat-button-color);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+      
+      .chat-message a:hover {
+        color: var(--button-hover-color);
+      }
+      
+      .chat-message .bold-text {
+        font-weight: 600;
       }
       
       @keyframes message-appear {
@@ -783,7 +796,25 @@
       
       if (text) {
         const textNode = document.createElement('div');
-        textNode.textContent = text;
+        
+        // Format text for bold and URLs
+        const formattedText = text
+          // First, escape any HTML to prevent XSS
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          // Replace URLs with clickable links
+          .replace(
+            /(https?:\/\/[^\s]+)|((?:[\w-]+\.)+[\w-]+(?:\/[^\s]*)?)/g,
+            (match) => {
+              const url = match.startsWith('http') ? match : `https://${match}`;
+              return `<a href="${url}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+            }
+          )
+          // Replace **text** with bold text
+          .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>');
+        
+        textNode.innerHTML = formattedText;
         messageElement.appendChild(textNode);
       }
       
