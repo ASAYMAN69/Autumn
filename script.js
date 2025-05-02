@@ -36,36 +36,111 @@
     return newSessionId;
   };
   
+  // Simple tag manager - works with current server tags only
+  const sessionTagManager = {
+    // Store the current tags string from the server
+    currentTags: '',
+    
+    // Extract tags from message
+    extractTags: (message) => {
+      const tagPattern = /((<\/[^\\>]+\\>)+)/;
+      const match = message.match(tagPattern);
+      return match ? match[0] : '';
+    },
+    
+    // Remove tags from message for display
+    removeTagsForDisplay: (message) => {
+      return message.replace(/<\/([^\\>]+)\\>/g, '');
+    },
+    
+    // Process button click for tags
+    processButtonClick: (buttonText) => {
+      if (buttonText === 'Go Back' || buttonText === 'Go back') {
+        // Find and remove the last tag
+        const lastTagPattern = /<\/([^\\>]+)\\>(?!.*<\/[^\\>]+\\>)/;
+        this.currentTags = this.currentTags.replace(lastTagPattern, '');
+        return `${this.currentTags} ${buttonText}`;
+      } else {
+        // Add new tag for the button
+        const newTag = `</${buttonText}\\>`;
+        this.currentTags += newTag;
+        return `${this.currentTags} ${buttonText}`;
+      }
+    },
+    
+    // Update current tags from server response
+    updateFromServer: (message) => {
+      const tags = sessionTagManager.extractTags(message);
+      if (tags) {
+        this.currentTags = tags;
+      }
+    }
+  };
+  
   // Chat API handling
   const chatApi = {
     webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/b5a531d1-585f-43fe-ba30-ec5aacac4189/chat',
     
-    sendMessage: async (message) => {
+    sendMessage: async (message, isButtonClick = false) => {
       try {
+        let processedMessage = message;
+        
+        if (isButtonClick) {
+          processedMessage = sessionTagManager.processButtonClick(message);
+        }
+        
         const payload = {
           action: "sendMessage",
           sessionId: generateSessionId(),
-          chatInput: message,
+          chatInput: processedMessage,
           metadata: {}
         };
+        
+        console.log("Sending message to webhook:", payload);
         
         const response = await fetch(chatApi.webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
+          mode: 'cors', // Try with standard CORS first
           body: JSON.stringify(payload)
+        }).catch(async (error) => {
+          console.log("CORS error, trying with no-cors mode:", error);
+          // If CORS fails, try with no-cors mode as fallback
+          return fetch(chatApi.webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            mode: 'no-cors',
+            body: JSON.stringify(payload)
+          });
         });
+        
+        // If using no-cors, we won't get a proper response
+        if (response.type === 'opaque') {
+          console.log("Using no-cors mode, cannot read response body");
+          
+          // Since we can't read the response with no-cors, provide a default response
+          return "I've received your message, but I'm having trouble connecting to my backend services. Please try again later.";
+        }
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        return data.output || "Sorry, I couldn't understand that.";
+        const responseText = data.output || "Sorry, I couldn't understand that.";
+        
+        // Extract and save tags from the response
+        sessionTagManager.updateFromServer(responseText);
+        
+        // Return clean text for display
+        return responseText;
       } catch (error) {
         console.error('Error sending message:', error);
-        return "Sorry, there was an error processing your request.";
+        return "I'm having trouble connecting right now. Please check your internet connection and try again.";
       }
     }
   };
@@ -76,10 +151,15 @@
     chatButtonColor: 'rgb(111, 90, 165)', 
     sendButtonColor: 'rgb(154, 134, 242)',
     
-    // Helper function to lighten a color - defined first to avoid the error
+    // Helper function to lighten a color - fixed to handle null values
     lightenColor: function(color, factor) {
       // Convert to RGB if it's a hex color
       let r, g, b;
+      
+      if (!color) {
+        // Default color if input is undefined or null
+        return `rgba(200, 240, 255, ${factor})`;
+      }
       
       if (color.startsWith('#')) {
         const hex = color.replace('#', '');
@@ -88,10 +168,17 @@
         b = parseInt(hex.substr(4, 2), 16);
       } else if (color.startsWith('rgb')) {
         // Extract RGB values
-        const rgbValues = color.match(/\d+/g);
-        r = parseInt(rgbValues[0]);
-        g = parseInt(rgbValues[1]);
-        b = parseInt(rgbValues[2]);
+        const rgbMatches = color.match(/\d+/g);
+        if (!rgbMatches || rgbMatches.length < 3) {
+          // Default values if the regex doesn't match properly
+          r = 100;
+          g = 200;
+          b = 255;
+        } else {
+          r = parseInt(rgbMatches[0]);
+          g = parseInt(rgbMatches[1]);
+          b = parseInt(rgbMatches[2]);
+        }
       } else {
         // Default to a light blue if color format is unknown
         return `rgba(200, 240, 255, ${factor})`;
@@ -667,7 +754,7 @@
     });
     
     // Handle sending messages
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (isButtonClick = false) => {
       const message = input.value.trim();
       if (!message) return;
       
@@ -681,17 +768,17 @@
       showTypingIndicator();
       
       // Send to API and get response
-      const botResponse = await chatApi.sendMessage(message);
+      const botResponse = await chatApi.sendMessage(message, isButtonClick);
       
       // Process the response
       processAndDisplayBotResponse(botResponse);
     };
     
-    sendButton.addEventListener('click', handleSendMessage);
+    sendButton.addEventListener('click', () => handleSendMessage(false));
     
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
-        handleSendMessage();
+        handleSendMessage(false);
       }
     });
     
@@ -708,25 +795,32 @@
         }, 300); // Match the duration of the typing-disappear animation
       }
       
+      // Remove special tags before processing
+      const cleanText = sessionTagManager.removeTagsForDisplay(text);
+      
       // Check for postimg.cc image URLs
       const imageRegex = /https:\/\/i\.postimg\.cc\/\S+/g;
-      const imageMatches = text.match(imageRegex);
+      const imageMatches = cleanText.match(imageRegex);
       
       // Check for button markup
-      const buttonRegex = /``(.*?)``/g;
-      const buttonMatches = [...text.matchAll(buttonRegex)];
+      const buttonRegex = /`([^`]+)`/g;  // FIX: Changed from /``(.*?)``/g to correctly match single backtick pairs
+      const buttonMatches = [];
+      let match;
+      while ((match = buttonRegex.exec(cleanText)) !== null) {
+        buttonMatches.push(match);
+      }
       
       // Clean text by removing button markers
-      let cleanText = text.replace(/``.*?``/g, '');
+      let displayText = cleanText.replace(/`([^`]+)`/g, '');  // FIX: Changed from /``.*?``/g to match single backtick pairs
       
       // If there are image URLs, remove them from the text as well
       if (imageMatches) {
         imageMatches.forEach(imgUrl => {
-          cleanText = cleanText.replace(imgUrl, '');
+          displayText = displayText.replace(imgUrl, '');
         });
       }
       
-      cleanText = cleanText.trim();
+      displayText = displayText.trim();
       
       let displaySequence = [];
       
@@ -741,10 +835,10 @@
       }
       
       // Add text content (with buttons if any) to display sequence
-      if (cleanText || buttonMatches.length > 0) {
+      if (displayText || buttonMatches.length > 0) {
         displaySequence.push({
           type: 'text',
-          content: cleanText,
+          content: displayText,
           buttons: buttonMatches.map(match => match[1])
         });
       }
@@ -804,18 +898,19 @@
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
-          // Replace "<br>" with actual line breaks
-          .replace(/<br>/g, '\n')
-          // Replace URLs with clickable links
+          // FIX: Handle escaped sequences correctly - specifically for line breaks
+          .replace(/\\n/g, '<br>') // Replace \n with <br>
+          .replace(/\\m/g, '\n') // Replace \m with actual newline for further processing
+          .replace(/<br>/g, '<br>') // Keep <br> tags
+          // Replace URLs with clickable links - updated regex to better match URLs
           .replace(
-            /(https?:\/\/[^\s]+)|((?:[\w-]+\.)+[\w-]+(?:\/[^\s]*)?)/g,
+            /(https?:\/\/[^\s]+)/g, // FIX: Simplified URL regex to focus on http/https URLs
             (match) => {
-              const url = match.startsWith('http') ? match : `https://${match}`;
-              return `<a href="${url}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+              return `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`;
             }
           )
-          // Replace **text** with bold text
-          .replace(/\*\*(.*?)\*\*/g, '<span class="bold-text">$1</span>')
+          // Replace **text** with bold text - fixed regex to properly handle bold
+          .replace(/\*\*([^*]+)\*\*/g, '<span class="bold-text">$1</span>')
           // Convert line breaks to HTML line breaks for proper rendering
           .replace(/\n/g, '<br>');
         
@@ -834,8 +929,10 @@
           button.textContent = buttonText;
           
           button.onclick = () => {
+            // For button clicks, add the raw button text to input
             input.value = buttonText;
-            sendButton.click();
+            // Set a flag to indicate this is a button click
+            handleSendMessage(true);
           };
           
           buttonWrapper.appendChild(button);
@@ -891,17 +988,24 @@
     const noButton = confirmationDialog.querySelector('.no-btn');
     
     yesButton.addEventListener('click', () => {
-      // Generate new session ID
-      sessionId = generateSessionId();
+      // Clear saved tags for the session
+      sessionTagManager.currentTags = '';
+      
+      // Generate new session ID by clearing the current one
+      sessionStorage.removeItem('chatWidgetSessionId');
+      const newSessionId = generateSessionId();
+      console.log('New session started with ID:', newSessionId);
+      
       // Clear messages
-      const messagesContainer = document.getElementById('chat-widget-messages');
       messagesContainer.innerHTML = '';
+      
       // Show welcome message
       showTypingIndicator();
       setTimeout(() => {
         hideTypingIndicator();
         addMessage("Hello! How can I help you today?", 'bot');
       }, 1000);
+      
       // Hide confirmation
       confirmationDialog.classList.remove('show');
       setTimeout(() => {
