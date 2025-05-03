@@ -78,7 +78,7 @@
   
   // Chat API handling
   const chatApi = {
-    webhookUrl: 'https://script.google.com/macros/s/AKfycbwS-eBduPAzNKivrii46IAPvHRDkNubYUC3xGDa3PNcLOzK2zyN8KB0wi1pBxyHZ7dO/exec',
+    webhookUrl: 'https://lovely-proper-sunfish.ngrok-free.app/webhook/b5a531d1-585f-43fe-ba30-ec5aacac4189/chat',
     
     sendMessage: async (message, isButtonClick = false) => {
       try {
@@ -122,7 +122,7 @@
           console.log("Using no-cors mode, cannot read response body");
           
           // Since we can't read the response with no-cors, provide a default response
-          return "I've received your message, but I'm having trouble connecting to my backend services. Please try again later.";
+          return "The chatbot is inactive due to the lack of demand. If you're interested in a demo, please contact via Linkedin.";
         }
         
         if (!response.ok) {
