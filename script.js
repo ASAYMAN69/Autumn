@@ -1,4 +1,3 @@
-// Chat Widget Script
 (function() {
   // Function to generate timestamp-based keyphrase
   const generateTimeBasedKeyphrase = () => {
@@ -58,13 +57,13 @@
       if (buttonText === 'Go Back' || buttonText === 'Go back') {
         // Find and remove the last tag
         const lastTagPattern = /<\/([^\\>]+)\\>(?!.*<\/[^\\>]+\\>)/;
-        this.currentTags = this.currentTags.replace(lastTagPattern, '');
-        return `${this.currentTags} ${buttonText}`;
+        sessionTagManager.currentTags = sessionTagManager.currentTags.replace(lastTagPattern, '');
+        return `${sessionTagManager.currentTags} ${buttonText}`;
       } else {
         // Add new tag for the button
         const newTag = `</${buttonText}\\>`;
-        this.currentTags += newTag;
-        return `${this.currentTags} ${buttonText}`;
+        sessionTagManager.currentTags += newTag;
+        return `${sessionTagManager.currentTags} ${buttonText}`;
       }
     },
     
@@ -72,7 +71,7 @@
     updateFromServer: (message) => {
       const tags = sessionTagManager.extractTags(message);
       if (tags) {
-        this.currentTags = tags;
+        sessionTagManager.currentTags = tags;
       }
     }
   };
@@ -147,7 +146,7 @@
 
   // UI Configuration (color scheme)
   const UIConfig = {
-    // Default colors
+    // Updated colors based on requirements
     chatButtonColor: 'rgb(111, 90, 165)', 
     sendButtonColor: 'rgb(154, 134, 242)',
     
@@ -286,8 +285,8 @@
         position: absolute;
         bottom: 80px;
         right: 0;
-        width: 320px;
-        height: 400px;
+        width: 320px;  /* Reduced from 380px */
+        height: 480px; /* Reduced from 520px */
         background-color: white;
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -352,6 +351,7 @@
         word-wrap: break-word;
         animation: message-appear 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         transform-origin: bottom center;
+        position: relative;
       }
       
       .chat-message.bot {
@@ -385,6 +385,53 @@
         font-weight: 600;
       }
       
+      .chat-message .timestamp {
+        position: absolute;
+        bottom: -18px;
+        font-size: 10px;
+        color: #888;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 2px 4px;
+      }
+      
+      .chat-message.bot .timestamp {
+        left: 0;
+        text-align: left;
+      }
+      
+      .chat-message.user .timestamp {
+        right: 0;
+        text-align: right;
+      }
+      
+      .chat-message:hover .timestamp {
+        opacity: 1;
+      }
+      
+      .message-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 3px;
+        position: relative;
+      }
+      
+      .message-group .timestamp {
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        font-size: 10px;
+        color: #888;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 2px 4px;
+      }
+      
+      .message-group:hover .timestamp {
+        opacity: 1;
+      }
+      
       @keyframes message-appear {
         0% {
           opacity: 0;
@@ -412,6 +459,29 @@
         max-width: 80%;
         margin-bottom: 3px;
         animation: message-appear 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        position: relative;
+      }
+      
+      .chat-image {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        display: block;
+      }
+      
+      .chat-image-container .timestamp {
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        font-size: 10px;
+        color: #888;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 2px 4px;
+      }
+      
+      .chat-image-container:hover .timestamp {
+        opacity: 1;
       }
       
       #chat-widget-input-area {
@@ -436,8 +506,8 @@
       }
       
       #chat-widget-send {
-        background-color: var(--send-button-color);
-        color: white;
+        background-color: #e0e0e0;
+        color: #888;
         border: none;
         width: 34px;
         height: 34px;
@@ -447,11 +517,26 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+      
+      #chat-widget-send.active {
+        background-color: var(--send-button-color);
+        color: white;
+      }
+      
+      #chat-widget-send.active:hover {
+        transform: scale(1.05);
       }
       
       #chat-widget-send svg {
         width: 18px;
         height: 18px;
+        transition: transform 0.2s ease;
+      }
+      
+      #chat-widget-send.active:hover svg {
+        transform: scale(1.15);
       }
       
       .typing-indicator {
@@ -534,12 +619,6 @@
       .chat-inline-button:hover {
         background-color: var(--button-hover-color);
         color: #000;
-      }
-      
-      .chat-image {
-        max-width: 100%;
-        max-height: 200px;
-        border-radius: 8px;
       }
       
       /* Add new styles for restart confirmation dialog */
@@ -753,6 +832,19 @@
       button.classList.remove('open');
     });
     
+    // Update send button state based on input
+    const updateSendButtonState = () => {
+      const hasText = input.value.trim() !== '';
+      if (hasText) {
+        sendButton.classList.add('active');
+      } else {
+        sendButton.classList.remove('active');
+      }
+    };
+    
+    // Add event listener to update send button state
+    input.addEventListener('input', updateSendButtonState);
+    
     // Handle sending messages
     const handleSendMessage = async (isButtonClick = false) => {
       const message = input.value.trim();
@@ -760,6 +852,9 @@
       
       // Clear input
       input.value = '';
+      
+      // Update send button state
+      updateSendButtonState();
       
       // Add user message to chat with animation
       addMessage(message, 'user');
@@ -782,108 +877,144 @@
       }
     });
     
-    // Process and display bot response with separate images and text
+    // Function to validate URL
+    const isValidUrl = (url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+    
+    // Track the current message group
+    let currentMessageGroup = null;
+    
+    // Process and display bot response with message breaks
     function processAndDisplayBotResponse(text) {
       // Hide typing indicator with fade-out animation
-      const typingIndicator = document.getElementById('typing-indicator');
-      if (typingIndicator) {
-        typingIndicator.classList.add('hide');
-        setTimeout(() => {
-          if (typingIndicator && typingIndicator.parentNode) {
-            typingIndicator.parentNode.removeChild(typingIndicator);
-          }
-        }, 300); // Match the duration of the typing-disappear animation
-      }
+      hideTypingIndicator();
       
       // Remove special tags before processing
       const cleanText = sessionTagManager.removeTagsForDisplay(text);
       
-      // Check for postimg.cc image URLs
-      const imageRegex = /https:\/\/i\.postimg\.cc\/\S+/g;
-      const imageMatches = cleanText.match(imageRegex);
+      // Split messages on <msgBreak> tag
+      const messageParts = cleanText.split('<msgBreak>');
       
-      // Check for button markup
-      const buttonRegex = /`([^`]+)`/g;  // FIX: Changed from /``(.*?)``/g to correctly match single backtick pairs
-      const buttonMatches = [];
-      let match;
-      while ((match = buttonRegex.exec(cleanText)) !== null) {
-        buttonMatches.push(match);
-      }
+      // Reset message group for new response
+      currentMessageGroup = null;
       
-      // Clean text by removing button markers
-      let displayText = cleanText.replace(/`([^`]+)`/g, '');  // FIX: Changed from /``.*?``/g to match single backtick pairs
+      // Display first part immediately
+      displayMessagePart(0);
       
-      // If there are image URLs, remove them from the text as well
-      if (imageMatches) {
-        imageMatches.forEach(imgUrl => {
-          displayText = displayText.replace(imgUrl, '');
-        });
-      }
-      
-      displayText = displayText.trim();
-      
-      let displaySequence = [];
-      
-      // Add images first (if any) to display sequence
-      if (imageMatches && imageMatches.length > 0) {
-        imageMatches.forEach(imageUrl => {
-          displaySequence.push({
-            type: 'image',
-            content: imageUrl
-          });
-        });
-      }
-      
-      // Add text content (with buttons if any) to display sequence
-      if (displayText || buttonMatches.length > 0) {
-        displaySequence.push({
-          type: 'text',
-          content: displayText,
-          buttons: buttonMatches.map(match => match[1])
-        });
-      }
-      
-      // Display elements with appropriate timing
-      let delay = 0;
-      displaySequence.forEach((item, index) => {
-        setTimeout(() => {
-          if (item.type === 'image') {
-            displayImage(item.content);
-          } else if (item.type === 'text') {
-            displayTextWithButtons(item.content, item.buttons);
-          }
-        }, delay);
+      // Function to display message parts sequentially
+      function displayMessagePart(index) {
+        if (index >= messageParts.length) return;
         
-        // Add a 500ms delay between image and text, but only if there's an image followed by text
-        if (item.type === 'image' && index < displaySequence.length - 1 && displaySequence[index + 1].type === 'text') {
-          delay += 500;
+        // Start a new message group for a new sequence of messages
+        if (index === 0) {
+          currentMessageGroup = document.createElement('div');
+          currentMessageGroup.className = 'message-group';
+          messagesContainer.appendChild(currentMessageGroup);
+          
+          // Add timestamp to the group
+          const timestamp = document.createElement('div');
+          timestamp.className = 'timestamp';
+          const now = new Date();
+          timestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          currentMessageGroup.appendChild(timestamp);
         }
         
-        delay += 300; // Basic delay between items
-      });
+        const part = messageParts[index].trim();
+        if (part) {
+          // Check for button markup
+          const buttonRegex = /`([^`]+)`/g;
+          const buttonMatches = [];
+          let match;
+          
+          while ((match = buttonRegex.exec(part)) !== null) {
+            buttonMatches.push(match);
+          }
+          
+          // Clean text by removing button markers
+          let displayText = part.replace(/`([^`]+)`/g, '').trim();
+          
+          // Check for image tags and process them properly
+          displayText = processImageContent(displayText, currentMessageGroup);
+          
+          // Create a display sequence for the current part
+          if (displayText || buttonMatches.length > 0) {
+            displayTextWithButtons(displayText, buttonMatches.map(match => match[1]), currentMessageGroup);
+          }
+        }
+        
+        // Schedule next part with typing animation
+        if (index + 1 < messageParts.length) {
+          setTimeout(() => {
+            showTypingIndicator();
+            
+            setTimeout(() => {
+              hideTypingIndicator();
+              displayMessagePart(index + 1);
+            }, 1500);
+          }, 300);
+        }
+        
+        // Scroll to the bottom after adding content
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
     }
     
-    // Display image
-    function displayImage(imageUrl) {
-      const imageContainer = document.createElement('div');
-      imageContainer.className = 'chat-image-container';
+    // Process image content and create image elements
+    function processImageContent(text, messageGroup) {
+      const imgRegex = /\+\+img=([^+]+)\+\+/g;
+      let processedText = text;
+      const matches = [...text.matchAll(imgRegex)];
       
-      const imageElement = document.createElement('img');
-      imageElement.src = imageUrl;
-      imageElement.alt = 'Chat image';
-      imageElement.className = 'chat-image';
-      imageElement.onerror = () => {
-        imageElement.style.display = 'none';
-        console.error('Failed to load image:', imageUrl);
-      };
+      // If there are image tags, process them
+      if (matches.length > 0) {
+        // Remove the image tags from the text
+        processedText = text.replace(imgRegex, '').trim();
+        
+        // Create image elements for each match
+        matches.forEach(match => {
+          const url = match[1];
+          if (isValidUrl(url)) {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'chat-image-container';
+            
+            const image = document.createElement('img');
+            image.src = url;
+            image.className = 'chat-image';
+            image.alt = "Chat image";
+            image.loading = "lazy";
+            
+            // Add timestamp to image
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            const now = new Date();
+            timestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            imageContainer.appendChild(image);
+            imageContainer.appendChild(timestamp);
+            
+            // Add the image to the message group
+            messageGroup.appendChild(imageContainer);
+          } else {
+            // If URL is invalid, show an error message
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'chat-message bot';
+            errorMessage.textContent = 'Failed to load image: Invalid URL';
+            messageGroup.appendChild(errorMessage);
+          }
+        });
+      }
       
-      imageContainer.appendChild(imageElement);
-      messagesContainer.appendChild(imageContainer);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      return processedText;
     }
     
     // Display text with buttons
-    function displayTextWithButtons(text, buttons) {
+    function displayTextWithButtons(text, buttons, messageGroup) {
       if (!text && (!buttons || buttons.length === 0)) return;
       
       const messageElement = document.createElement('div');
@@ -898,18 +1029,21 @@
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
-          // FIX: Handle escaped sequences correctly - specifically for line breaks
+          // Handle escaped sequences correctly - specifically for line breaks
           .replace(/\\n/g, '<br>') // Replace \n with <br>
           .replace(/\\m/g, '\n') // Replace \m with actual newline for further processing
           .replace(/<br>/g, '<br>') // Keep <br> tags
           // Replace URLs with clickable links - updated regex to better match URLs
           .replace(
-            /(https?:\/\/[^\s]+)/g, // FIX: Simplified URL regex to focus on http/https URLs
+            /(https?:\/\/[^\s]+)/g, // Simplified URL regex to focus on http/https URLs
             (match) => {
+              if (match.includes('<img')) {
+                return match; // Skip URLs that are part of image tags
+              }
               return `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`;
             }
           )
-          // Replace **text** with bold text - fixed regex to properly handle bold
+          // Replace **text** with bold text
           .replace(/\*\*([^*]+)\*\*/g, '<span class="bold-text">$1</span>')
           // Convert line breaks to HTML line breaks for proper rendering
           .replace(/\n/g, '<br>');
@@ -941,15 +1075,24 @@
         messageElement.appendChild(buttonWrapper);
       }
       
-      messagesContainer.appendChild(messageElement);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      // Add message to the group
+      messageGroup.appendChild(messageElement);
     }
     
     // Helper function for adding messages with animation
     function addMessage(text, sender) {
+      // For user messages, create a simple message
       const messageElement = document.createElement('div');
       messageElement.classList.add('chat-message', sender);
       messageElement.textContent = text;
+      
+      // Add timestamp to message
+      const timestamp = document.createElement('div');
+      timestamp.className = 'timestamp';
+      const now = new Date();
+      timestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      messageElement.appendChild(timestamp);
+      
       messagesContainer.appendChild(messageElement);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -1019,6 +1162,9 @@
         confirmationDialog.style.display = 'none';
       }, 300);
     });
+    
+    // Initialize send button state
+    updateSendButtonState();
   }
 
   // Initialize the chat widget
