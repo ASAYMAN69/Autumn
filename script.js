@@ -147,8 +147,8 @@
   // UI Configuration (color scheme)
   const UIConfig = {
     // Updated colors based on requirements
-    chatButtonColor: 'rgb(111, 90, 165)', 
-    sendButtonColor: 'rgb(154, 134, 242)',
+    chatButtonColor: 'rgb(28, 46, 64)', 
+    sendButtonColor: 'rgb(84, 119, 146)',
     
     // Helper function to lighten a color - fixed to handle null values
     lightenColor: function(color, factor) {
