@@ -414,10 +414,10 @@
       color: var(--primary-color);
     }
 
-    /* Trusted By Section */
+    /* Trusted By Section - Completely Redesigned */
     .trusted-by {
       background: linear-gradient(135deg, var(--muted-color) 0%, var(--secondary-color) 100%);
-      padding: 4rem 0;
+      padding: 6rem 0;
       position: relative;
       overflow: hidden;
     }
@@ -425,11 +425,11 @@
     .trusted-by::before {
       content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(84, 119, 146, 0.4) 0%, rgba(84, 119, 146, 0) 70%);
+      top: -10%;
+      right: -5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(84, 119, 146, 0.15) 0%, rgba(84, 119, 146, 0) 70%);
       border-radius: 50%;
       z-index: 0;
     }
@@ -437,80 +437,123 @@
     .trusted-by::after {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(84, 119, 146, 0.3) 0%, rgba(84, 119, 146, 0) 70%);
+      bottom: -15%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(33, 52, 72, 0.08) 0%, rgba(33, 52, 72, 0) 70%);
       border-radius: 50%;
       z-index: 0;
     }
 
-    .trusted-by h2 {
-      text-align: center;
+    .trusted-by-container {
+      position: relative;
+      z-index: 2;
     }
 
-    .client-grid {
+    .trusted-by h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    .trusted-by > p {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      color: var(--blue-dark);
+    }
+
+    .clients-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
       margin-top: 3rem;
+    }
+
+    .client-item {
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(33, 52, 72, 0.08);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
       position: relative;
+      transform: translateY(0);
+      opacity: 0;
+    }
+    
+    .client-item.animated {
+      animation: fadeIn 0.8s forwards;
+    }
+
+    .client-item:hover {
+      transform: translateY(-16px);
+      box-shadow: 0 20px 40px rgba(33, 52, 72, 0.15);
+    }
+
+    .client-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
       z-index: 1;
     }
 
-    .client-card {
-      background-color: white;
-      border-radius: var(--border-radius);
-      padding: 2rem;
-      box-shadow: var(--box-shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-      opacity: 0;
-      transform: translateY(20px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .client-card.animated {
-      animation: fadeIn 0.6s forwards;
-    }
-
-    .client-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(33, 52, 72, 0.15);
-      background-color: #f0f2fa;
-    }
-
-    .client-logo {
+    .client-header {
+      padding: 2rem 2rem 1rem;
       display: flex;
       align-items: center;
-      margin-bottom: 1rem;
+      gap: 1rem;
     }
 
     .client-icon {
-      font-size: 36px;
-      margin-right: 10px;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: var(--transition);
+      background: linear-gradient(135deg, rgba(148, 180, 193, 0.1), rgba(33, 52, 72, 0.05));
+      border-radius: 50%;
+      font-size: 2rem;
+      transition: transform 0.4s ease;
     }
 
-    .client-card:hover .client-icon {
-      transform: rotate(10deg) scale(1.1);
+    .client-item:hover .client-icon {
+      transform: scale(1.1) rotate(10deg);
     }
 
-    .client-name {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text-color);
-    }
-
-    .client-project {
+    .client-info h3 {
+      margin: 0;
       color: var(--primary-color);
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .client-info .client-project {
+      color: var(--accent-color);
       font-weight: 500;
-      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .client-body {
+      padding: 1rem 2rem;
+    }
+
+    .client-body p {
+      color: var(--text-color);
+      opacity: 0.85;
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .client-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid rgba(33, 52, 72, 0.08);
+      text-align: right;
     }
 
     .client-link {
@@ -518,22 +561,39 @@
       align-items: center;
       color: var(--accent-color);
       text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
+      font-weight: 600;
+      transition: all 0.3s ease;
       gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background-color: rgba(84, 119, 146, 0.07);
     }
 
     .client-link:hover {
-      color: var(--primary-color);
+      background-color: var(--accent-color);
+      color: white;
       gap: 0.75rem;
     }
 
     .client-link svg {
-      transition: var(--transition);
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
     }
 
-    .client-card:hover .client-link svg {
-      transform: translateX(3px);
+    .client-item:hover .client-link svg {
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 768px) {
+      .clients-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+      }
+      
+      .trusted-by {
+        padding: 4rem 0;
+      }
     }
 
     /* How It Works - Enhanced Section */
@@ -1126,42 +1186,80 @@
     </div>
   </section>
 
+  <!-- Trusted By Section -->
   <section class="trusted-by" id="trusted-by">
-    <div class="container">
+    <div class="container trusted-by-container">
       <h2>Trusted By</h2>
-      <p>Businesses of all sizes rely on our automation services to streamline operations and drive growth.</p>
+      <p>Forward-thinking businesses rely on our automation expertise to streamline operations and drive growth.</p>
       
-      <div class="client-grid">
-        <div class="client-card">
-          <div class="client-logo">
+      <div class="clients-grid">
+        <!-- Wanaan Car Rental -->
+        <div class="client-item">
+          <div class="client-header">
             <div class="client-icon">🚗</div>
+            <div class="client-info">
+              <h3>Wanaan Car Rental</h3>
+              <p class="client-project">Email & Booking Automation</p>
+            </div>
           </div>
-          <h3 class="client-name">Wanaan Car Rental Agency</h3>
-          <p class="client-project">Email Automation and Chatbot</p>
-          <p>Streamlined customer communications and booking process with intelligent email automation and 24/7 customer support chatbot.</p>
-          <a href="https://www.wanaan-bh.com/" target="_blank" class="client-link">
-            Visit Website
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
+          <div class="client-body">
+            <p>Streamlined customer communications and booking process with intelligent email automation and 24/7 customer support chatbot.</p>
+          </div>
+          <div class="client-footer">
+            <a href="https://www.wanaan-bh.com/" target="_blank" class="client-link">
+              Visit Website
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
         </div>
         
-        <div class="client-card">
-          <div class="client-logo">
+        <!-- TiC Accessories -->
+        <div class="client-item">
+          <div class="client-header">
             <div class="client-icon">🛒</div>
+            <div class="client-info">
+              <h3>TiC Accessories</h3>
+              <p class="client-project">Call Routing & CRM Integration</p>
+            </div>
           </div>
-          <h3 class="client-name">TiC Accessories</h3>
-          <p class="client-project">Call Automation and CRM</p>
-          <p>Implemented an intelligent call routing system and customer relationship management solution to improve service quality and sales tracking.</p>
-          <a href="https://ticonsultancy.co.uk/" target="_blank" class="client-link">
-            Visit Website
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
+          <div class="client-body">
+            <p>Implemented an intelligent call routing system and customer relationship management solution to improve service quality and sales tracking.</p>
+          </div>
+          <div class="client-footer">
+            <a href="https://ticonsultancy.co.uk/" target="_blank" class="client-link">
+              Visit Website
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Trust Innovatives -->
+        <div class="client-item">
+          <div class="client-header">
+            <div class="client-icon">💻</div>
+            <div class="client-info">
+              <h3>Trust Innovatives</h3>
+              <p class="client-project">Backend Development</p>
+            </div>
+          </div>
+          <div class="client-body">
+            <p>Developed robust server-side solutions and API integrations to power their digital transformation initiatives and enhance scalability.</p>
+          </div>
+          <div class="client-footer">
+            <a href="https://ticonsultancy.co.uk/" target="_blank" class="client-link">
+              Visit Website
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1385,7 +1483,7 @@
         const benefitCards = document.querySelectorAll('.benefit-card');
         const testimonial = document.querySelector('.testimonial');
         const formWrapper = document.querySelector('.form-wrapper');
-        const clientCards = document.querySelectorAll('.client-card');
+        const clientItems = document.querySelectorAll('.client-item');
         
         // Function to check if element is in viewport
         function isInViewport(element) {
@@ -1405,11 +1503,11 @@
           }
         });
         
-        // Animate client cards
-        clientCards.forEach((card, index) => {
-          if (isInViewport(card)) {
+        // Animate client items
+        clientItems.forEach((item, index) => {
+          if (isInViewport(item)) {
             setTimeout(() => {
-              card.classList.add('animated');
+              item.classList.add('animated');
             }, index * 150);
           }
         });
